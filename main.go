@@ -29,6 +29,7 @@ type Options struct {
 }
 
 func main() {
+	log.SetFlags(0)
 	options := &Options{}
 
 	rootCmd := &cobra.Command{
