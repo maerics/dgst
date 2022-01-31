@@ -22,6 +22,7 @@ import (
 
 type Options struct {
 	Base64 bool
+	Binary bool
 }
 
 func main() {
@@ -38,11 +39,17 @@ func main() {
 			Use: name, Short: fmt.Sprintf("Compute and print the %q digest of stdin.", name),
 			Run: printHash(name, hfn, options),
 		}
+		cmd.Flags().BoolVarP(&options.Base64, "base64", "A", options.Base64,
+			"print hash values encoded as base64")
+		cmd.Flags().BoolVarP(&options.Binary, "binary", "b", options.Binary,
+			"print hash values directly without encoding")
 		rootCmd.AddCommand(cmd)
 	}
 
 	rootCmd.Flags().BoolVarP(&options.Base64, "base64", "A", options.Base64,
 		"print hash values encoded as base64")
+	rootCmd.Flags().BoolVarP(&options.Binary, "binary", "b", options.Binary,
+		"print hash values directly without encoding")
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
@@ -75,13 +82,20 @@ func printHash(name string, hfn func() hash.Hash, o *Options) func(*cobra.Comman
 		if _, err := io.Copy(h, os.Stdin); err != nil {
 			log.Fatalf("FATAL: failed to compute %q hash from stdin: %v", name, err)
 		}
-		var hash string
-		if o.Base64 {
-			hash = base64.StdEncoding.EncodeToString(h.Sum(nil))
-		} else {
-			hash = hex.EncodeToString(h.Sum(nil))
+		hash := h.Sum(nil)
+
+		switch true {
+		case o.Base64 && o.Binary:
+			log.Fatalf(`FATAL: conflicting flags "base64" and "binary".`)
+		case o.Base64:
+			fmt.Println(base64.StdEncoding.EncodeToString(hash))
+		case o.Binary:
+			if n, err := os.Stdout.Write(hash); err != nil || n != len(hash) {
+				log.Fatalf("FATAL: failed to write hash to stdout: %v", err)
+			}
+		default:
+			fmt.Println(hex.EncodeToString(hash))
 		}
-		fmt.Println(hash)
 	}
 }
 
