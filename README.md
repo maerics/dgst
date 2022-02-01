@@ -18,6 +18,7 @@ Available Commands:
   md5         Compute and print the "md5" digest of stdin.
   ripemd160   Compute and print the "ripemd160" digest of stdin.
   sha1        Compute and print the "sha1" digest of stdin.
+  sha224      Compute and print the "sha224" digest of stdin.
   sha256      Compute and print the "sha256" digest of stdin.
   sha3-224    Compute and print the "sha3-224" digest of stdin.
   sha3-256    Compute and print the "sha3-256" digest of stdin.
@@ -25,6 +26,8 @@ Available Commands:
   sha3-512    Compute and print the "sha3-512" digest of stdin.
   sha384      Compute and print the "sha384" digest of stdin.
   sha512      Compute and print the "sha512" digest of stdin.
+  sha512/224  Compute and print the "sha512/224" digest of stdin.
+  sha512/256  Compute and print the "sha512/256" digest of stdin.
 
 Flags:
   -A, --base64   print hash values encoded as base64
