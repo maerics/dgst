@@ -13,6 +13,7 @@ import (
 	"hash/fnv"
 	"log"
 
+	"github.com/cxmcc/tiger"
 	"github.com/jzelinskie/whirlpool"
 	"golang.org/x/crypto/blake2b"
 	"golang.org/x/crypto/md4"
@@ -53,6 +54,8 @@ var hashes = map[string]func(*Options) hash.Hash{
 
 	"ripemd160": func(*Options) hash.Hash { return ripemd160.New() },
 
+	"tiger":     func(o *Options) hash.Hash { return tiger.New() },
+	"tiger2":    func(o *Options) hash.Hash { return tiger.New2() },
 	"whirlpool": func(o *Options) hash.Hash { return whirlpool.New() },
 }
 
