@@ -57,24 +57,24 @@ var hashes = map[string]func(*Options) hash.Hash{
 }
 
 var aliases = map[string][]string{
-	"sha1":       {"sha-1", "SHA-1"},
-	"sha224":     {"sha-224", "SHA-224"},
-	"sha256":     {"sha-256", "SHA-256"},
-	"sha384":     {"sha-384", "SHA-384"},
-	"sha512":     {"sha-512", "SHA-512"},
-	"sha512/224": {"sha-512/224", "SHA-512/224"},
-	"sha512/256": {"sha-512/256", "SHA-512/256"},
-	"sha3-224":   {"sha-3-224", "SHA3-224", "SHA-3-224"},
-	"sha3-256":   {"sha-3-256", "SHA3-256", "SHA-3-256"},
-	"sha3-384":   {"sha-3-384", "SHA3-384", "SHA-3-384"},
-	"sha3-512":   {"sha-3-512", "SHA3-512", "SHA-3-512"},
+	"sha1":       {"sha-1"},
+	"sha224":     {"sha-224"},
+	"sha256":     {"sha-256"},
+	"sha384":     {"sha-384"},
+	"sha512":     {"sha-512"},
+	"sha512/224": {"sha-512/224"},
+	"sha512/256": {"sha-512/256"},
+	"sha3-224":   {"sha-3-224"},
+	"sha3-256":   {"sha-3-256"},
+	"sha3-384":   {"sha-3-384"},
+	"sha3-512":   {"sha-3-512"},
 
-	"fnv1-32":   {"fnv-1-32", "FNV-1-32"},
-	"fnv1a-32":  {"fnv-1a-32", "FNV-1a-32"},
-	"fnv1-64":   {"fnv-1-64", "FNV-1-64"},
-	"fnv1a-64":  {"fnv-1a-64", "FNV-1a-64"},
-	"fnv1-128":  {"fnv-1-128", "FNV-1-128"},
-	"fnv1a-128": {"fnv-1a-128", "FNV-1a-128"},
+	"fnv1-32":   {"fnv-1-32"},
+	"fnv1a-32":  {"fnv-1a-32"},
+	"fnv1-64":   {"fnv-1-64"},
+	"fnv1a-64":  {"fnv-1a-64"},
+	"fnv1-128":  {"fnv-1-128"},
+	"fnv1a-128": {"fnv-1a-128"},
 }
 
 func blakeKey(f func([]byte) (hash.Hash, error)) func(*Options) hash.Hash {
