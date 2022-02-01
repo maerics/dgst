@@ -45,8 +45,9 @@ func main() {
 
 	for name, hfn := range hashes {
 		cmd := &cobra.Command{
-			Use: name, Short: fmt.Sprintf("Compute and print the %q digest of stdin.", name),
-			Run: printHash(name, hfn, options),
+			Use: name, Aliases: aliases[name],
+			Short: fmt.Sprintf("Compute and print the %q digest of stdin.", name),
+			Run:   printHash(name, hfn, options),
 		}
 
 		// Flags for all hashes.
@@ -70,6 +71,7 @@ func main() {
 		rootCmd.AddCommand(cmd)
 	}
 
+	// Global flags.
 	rootCmd.Flags().BoolVarP(&options.Base64, "base64", "A", options.Base64,
 		"print hash values encoded as base64")
 	rootCmd.Flags().BoolVarP(&options.Binary, "binary", "b", options.Binary,
@@ -82,12 +84,8 @@ func main() {
 
 var hashes = map[string]func(*Options) hash.Hash{
 	"adler32": func(*Options) hash.Hash { return adler32.New() },
-	"crc32": func(o *Options) hash.Hash {
-		return crc32.New(crc32table(o.CrcPolynomial))
-	},
-	"crc64": func(o *Options) hash.Hash {
-		return crc64.New(crc64table(o.CrcPolynomial))
-	},
+	"crc32":   func(o *Options) hash.Hash { return crc32.New(crc32table(o.CrcPolynomial)) },
+	"crc64":   func(o *Options) hash.Hash { return crc64.New(crc64table(o.CrcPolynomial)) },
 
 	"md4": func(*Options) hash.Hash { return md4.New() },
 	"md5": func(*Options) hash.Hash { return md5.New() },
@@ -109,6 +107,20 @@ var hashes = map[string]func(*Options) hash.Hash{
 	"blake2-512": blakeKey(blake2b.New512),
 
 	"ripemd160": func(*Options) hash.Hash { return ripemd160.New() },
+}
+
+var aliases = map[string][]string{
+	"sha1":       {"sha-1", "SHA-1"},
+	"sha224":     {"sha-224", "SHA-224"},
+	"sha256":     {"sha-256", "SHA-256"},
+	"sha384":     {"sha-384", "SHA-384"},
+	"sha512":     {"sha-512", "SHA-512"},
+	"sha512/224": {"sha-512/224", "SHA-512/224"},
+	"sha512/256": {"sha-512/256", "SHA-512/256"},
+	"sha3-224":   {"sha-3-224", "SHA3-224", "SHA-3-224"},
+	"sha3-256":   {"sha-3-256", "SHA3-256", "SHA-3-256"},
+	"sha3-384":   {"sha-3-384", "SHA3-384", "SHA-3-384"},
+	"sha3-512":   {"sha-3-512", "SHA3-512", "SHA-3-512"},
 }
 
 func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobra.Command, []string) {
