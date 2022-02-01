@@ -13,6 +13,7 @@ import (
 	"hash/fnv"
 	"log"
 
+	"github.com/jzelinskie/whirlpool"
 	"golang.org/x/crypto/blake2b"
 	"golang.org/x/crypto/md4"
 	"golang.org/x/crypto/ripemd160"
@@ -51,6 +52,8 @@ var hashes = map[string]func(*Options) hash.Hash{
 	"blake2-512": blakeKey(blake2b.New512),
 
 	"ripemd160": func(*Options) hash.Hash { return ripemd160.New() },
+
+	"whirlpool": func(o *Options) hash.Hash { return whirlpool.New() },
 }
 
 var aliases = map[string][]string{

@@ -37,6 +37,7 @@ Available Commands:
   sha512      Compute and print the "sha512" digest of stdin.
   sha512/224  Compute and print the "sha512/224" digest of stdin.
   sha512/256  Compute and print the "sha512/256" digest of stdin.
+  whirlpool   Compute and print the "whirlpool" digest of stdin.
 
 Flags:
   -A, --base64   print hash values encoded as base64
