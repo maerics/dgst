@@ -19,7 +19,8 @@ type Options struct {
 
 	Blake2Key string
 
-	CrcPolynomial string
+	Crc32Polynomial string
+	Crc64Polynomial string
 }
 
 func main() {
@@ -51,10 +52,10 @@ func main() {
 			cmd.Flags().StringVarP(&options.Blake2Key, "key", "k", options.Blake2Key,
 				"hex encoded key for use with blake2 family of size 0-64 bytes")
 		case name == "crc32":
-			cmd.Flags().StringVar(&options.CrcPolynomial, "polynomial-table",
+			cmd.Flags().StringVar(&options.Crc32Polynomial, "polynomial-table",
 				"ieee", "polynomial constant for table generation, ieee/castagnoli/koopman")
 		case name == "crc64":
-			cmd.Flags().StringVar(&options.CrcPolynomial, "polynomial-table",
+			cmd.Flags().StringVar(&options.Crc64Polynomial, "polynomial-table",
 				"iso", "polynomial constant for table generation, iso/ecma")
 		}
 		rootCmd.AddCommand(cmd)

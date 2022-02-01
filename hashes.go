@@ -21,8 +21,8 @@ import (
 
 var hashes = map[string]func(*Options) hash.Hash{
 	"adler32": func(*Options) hash.Hash { return adler32.New() },
-	"crc32":   func(o *Options) hash.Hash { return crc32.New(crc32table(o.CrcPolynomial)) },
-	"crc64":   func(o *Options) hash.Hash { return crc64.New(crc64table(o.CrcPolynomial)) },
+	"crc32":   func(o *Options) hash.Hash { return crc32.New(crc32table(o.Crc32Polynomial)) },
+	"crc64":   func(o *Options) hash.Hash { return crc64.New(crc64table(o.Crc64Polynomial)) },
 
 	"md4": func(*Options) hash.Hash { return md4.New() },
 	"md5": func(*Options) hash.Hash { return md5.New() },
