@@ -1,32 +1,21 @@
 package main
 
 import (
-	"crypto/md5"
-	"crypto/sha1"
-	"crypto/sha256"
-	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"hash"
-	"hash/adler32"
-	"hash/crc32"
-	"hash/crc64"
 	"io"
 	"log"
 	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/blake2b"
-	"golang.org/x/crypto/md4"
-	"golang.org/x/crypto/ripemd160"
-	"golang.org/x/crypto/sha3"
 )
 
 type Options struct {
-	Base64 bool
-	Binary bool
+	FormatBase64 bool
+	FormatBinary bool
 
 	Blake2Key string
 
@@ -51,9 +40,9 @@ func main() {
 		}
 
 		// Flags for all hashes.
-		cmd.Flags().BoolVarP(&options.Base64, "base64", "A", options.Base64,
+		cmd.Flags().BoolVarP(&options.FormatBase64, "base64", "A", options.FormatBase64,
 			"print hash values encoded as base64")
-		cmd.Flags().BoolVarP(&options.Binary, "binary", "b", options.Binary,
+		cmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 			"print hash values directly without encoding")
 
 		// Hash-specific flags.
@@ -72,55 +61,14 @@ func main() {
 	}
 
 	// Global flags.
-	rootCmd.Flags().BoolVarP(&options.Base64, "base64", "A", options.Base64,
+	rootCmd.Flags().BoolVarP(&options.FormatBase64, "base64", "A", options.FormatBase64,
 		"print hash values encoded as base64")
-	rootCmd.Flags().BoolVarP(&options.Binary, "binary", "b", options.Binary,
+	rootCmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 		"print hash values directly without encoding")
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
-}
-
-var hashes = map[string]func(*Options) hash.Hash{
-	"adler32": func(*Options) hash.Hash { return adler32.New() },
-	"crc32":   func(o *Options) hash.Hash { return crc32.New(crc32table(o.CrcPolynomial)) },
-	"crc64":   func(o *Options) hash.Hash { return crc64.New(crc64table(o.CrcPolynomial)) },
-
-	"md4": func(*Options) hash.Hash { return md4.New() },
-	"md5": func(*Options) hash.Hash { return md5.New() },
-
-	"sha1":       func(*Options) hash.Hash { return sha1.New() },
-	"sha224":     func(*Options) hash.Hash { return sha256.New224() },
-	"sha256":     func(*Options) hash.Hash { return sha256.New() },
-	"sha384":     func(*Options) hash.Hash { return sha512.New384() },
-	"sha512":     func(*Options) hash.Hash { return sha512.New() },
-	"sha512/224": func(*Options) hash.Hash { return sha512.New512_224() },
-	"sha512/256": func(*Options) hash.Hash { return sha512.New512_256() },
-	"sha3-224":   func(*Options) hash.Hash { return sha3.New224() },
-	"sha3-256":   func(*Options) hash.Hash { return sha3.New256() },
-	"sha3-384":   func(*Options) hash.Hash { return sha3.New384() },
-	"sha3-512":   func(*Options) hash.Hash { return sha3.New512() },
-
-	"blake2-256": blakeKey(blake2b.New256),
-	"blake2-384": blakeKey(blake2b.New384),
-	"blake2-512": blakeKey(blake2b.New512),
-
-	"ripemd160": func(*Options) hash.Hash { return ripemd160.New() },
-}
-
-var aliases = map[string][]string{
-	"sha1":       {"sha-1", "SHA-1"},
-	"sha224":     {"sha-224", "SHA-224"},
-	"sha256":     {"sha-256", "SHA-256"},
-	"sha384":     {"sha-384", "SHA-384"},
-	"sha512":     {"sha-512", "SHA-512"},
-	"sha512/224": {"sha-512/224", "SHA-512/224"},
-	"sha512/256": {"sha-512/256", "SHA-512/256"},
-	"sha3-224":   {"sha-3-224", "SHA3-224", "SHA-3-224"},
-	"sha3-256":   {"sha-3-256", "SHA3-256", "SHA-3-256"},
-	"sha3-384":   {"sha-3-384", "SHA3-384", "SHA-3-384"},
-	"sha3-512":   {"sha-3-512", "SHA3-512", "SHA-3-512"},
 }
 
 func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobra.Command, []string) {
@@ -132,11 +80,11 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 		hash := h.Sum(nil)
 
 		switch true {
-		case o.Base64 && o.Binary:
+		case o.FormatBase64 && o.FormatBinary:
 			log.Fatalf(`FATAL: conflicting flags "base64" and "binary".`)
-		case o.Base64:
+		case o.FormatBase64:
 			fmt.Println(base64.StdEncoding.EncodeToString(hash))
-		case o.Binary:
+		case o.FormatBinary:
 			if n, err := os.Stdout.Write(hash); err != nil || n != len(hash) {
 				log.Fatalf("FATAL: failed to write hash to stdout: %v", err)
 			}
@@ -144,50 +92,4 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 			fmt.Println(hex.EncodeToString(hash))
 		}
 	}
-}
-
-func blakeKey(f func([]byte) (hash.Hash, error)) func(*Options) hash.Hash {
-	return func(o *Options) hash.Hash {
-		var key []byte = nil
-		if o.Blake2Key != "" {
-			if k, err := hex.DecodeString(o.Blake2Key); err != nil {
-				log.Fatalf("FATAL: invalid hex encoded key: %v.", err)
-			} else if len(k) > 64 {
-				log.Fatalf("FATAL: key is too long, got %v byte, wanted <= 64.", len(k))
-			} else {
-				key = k
-			}
-		}
-
-		h, err := f(key)
-		if err != nil {
-			log.Fatalf("FATAL: failed to create new blake2 key: %v", err)
-		}
-		return h
-	}
-}
-
-func crc32table(s string) *crc32.Table {
-	polynomial, ok := map[string]uint32{
-		"castagnoli": crc32.Castagnoli,
-		"ieee":       crc32.IEEE,
-		"koopman":    crc32.Koopman,
-	}[s]
-
-	if !ok {
-		log.Fatalf("FATAL: invalid crc32 polynomial name %q, try ieee/castagnoli/koopman.", s)
-	}
-	return crc32.MakeTable(polynomial)
-}
-
-func crc64table(s string) *crc64.Table {
-	polynomial, ok := map[string]uint64{
-		"ecma": crc64.ECMA,
-		"iso":  crc64.ISO,
-	}[s]
-
-	if !ok {
-		log.Fatalf("FATAL: invalid crc64 polynomial name %q, try iso/ecma.", s)
-	}
-	return crc64.MakeTable(polynomial)
 }
