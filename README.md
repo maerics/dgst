@@ -16,6 +16,12 @@ Available Commands:
   blake2-512  Compute and print the "blake2-512" digest of stdin.
   crc32       Compute and print the "crc32" digest of stdin.
   crc64       Compute and print the "crc64" digest of stdin.
+  fnv1-128    Compute and print the "fnv1-128" digest of stdin.
+  fnv1-32     Compute and print the "fnv1-32" digest of stdin.
+  fnv1-64     Compute and print the "fnv1-64" digest of stdin.
+  fnv1a-128   Compute and print the "fnv1a-128" digest of stdin.
+  fnv1a-32    Compute and print the "fnv1a-32" digest of stdin.
+  fnv1a-64    Compute and print the "fnv1a-64" digest of stdin.
   help        Help about any command
   md4         Compute and print the "md4" digest of stdin.
   md5         Compute and print the "md5" digest of stdin.

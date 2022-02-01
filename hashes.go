@@ -10,6 +10,7 @@ import (
 	"hash/adler32"
 	"hash/crc32"
 	"hash/crc64"
+	"hash/fnv"
 	"log"
 
 	"golang.org/x/crypto/blake2b"
@@ -38,6 +39,13 @@ var hashes = map[string]func(*Options) hash.Hash{
 	"sha3-384":   func(*Options) hash.Hash { return sha3.New384() },
 	"sha3-512":   func(*Options) hash.Hash { return sha3.New512() },
 
+	"fnv1-32":   func(o *Options) hash.Hash { return fnv.New32() },
+	"fnv1a-32":  func(o *Options) hash.Hash { return fnv.New32a() },
+	"fnv1-64":   func(o *Options) hash.Hash { return fnv.New64() },
+	"fnv1a-64":  func(o *Options) hash.Hash { return fnv.New64a() },
+	"fnv1-128":  func(o *Options) hash.Hash { return fnv.New128() },
+	"fnv1a-128": func(o *Options) hash.Hash { return fnv.New128a() },
+
 	"blake2-256": blakeKey(blake2b.New256),
 	"blake2-384": blakeKey(blake2b.New384),
 	"blake2-512": blakeKey(blake2b.New512),
@@ -57,6 +65,13 @@ var aliases = map[string][]string{
 	"sha3-256":   {"sha-3-256", "SHA3-256", "SHA-3-256"},
 	"sha3-384":   {"sha-3-384", "SHA3-384", "SHA-3-384"},
 	"sha3-512":   {"sha-3-512", "SHA3-512", "SHA-3-512"},
+
+	"fnv1-32":   {"fnv-1-32", "FNV-1-32"},
+	"fnv1a-32":  {"fnv-1a-32", "FNV-1a-32"},
+	"fnv1-64":   {"fnv-1-64", "FNV-1-64"},
+	"fnv1a-64":  {"fnv-1a-64", "FNV-1a-64"},
+	"fnv1-128":  {"fnv-1-128", "FNV-1-128"},
+	"fnv1a-128": {"fnv-1a-128", "FNV-1a-128"},
 }
 
 func blakeKey(f func([]byte) (hash.Hash, error)) func(*Options) hash.Hash {
