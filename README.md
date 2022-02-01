@@ -10,9 +10,12 @@ Usage:
   dgst [command]
 
 Available Commands:
+  adler32     Compute and print the "adler32" digest of stdin.
   blake2-256  Compute and print the "blake2-256" digest of stdin.
   blake2-384  Compute and print the "blake2-384" digest of stdin.
   blake2-512  Compute and print the "blake2-512" digest of stdin.
+  crc32       Compute and print the "crc32" digest of stdin.
+  crc64       Compute and print the "crc64" digest of stdin.
   help        Help about any command
   md4         Compute and print the "md4" digest of stdin.
   md5         Compute and print the "md5" digest of stdin.
@@ -49,4 +52,8 @@ $ echo -n | dgst blake2-256 --base64
 DldRwCblQ7Loqy6wYJnaodHl30d3j3eH+qtFzfEv46g=
 $ echo -n | dgst blake2-256 --base64 --key=deadbeef
 aSYX2bvjUGB+3hPEZrOTwL7m8UR0ESVGP5Zm1z5kh2U=
+$ echo OK | dgst crc32 --polynomial-table=castagnoli
+d6a6fc12
+$ echo OK | dgst crc64 --polynomial-table=ecma
+23ecc094c773eafd
 ```

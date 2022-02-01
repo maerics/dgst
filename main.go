@@ -9,6 +9,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"hash"
+	"hash/adler32"
+	"hash/crc32"
+	"hash/crc64"
 	"io"
 	"log"
 	"os"
@@ -25,7 +28,9 @@ type Options struct {
 	Base64 bool
 	Binary bool
 
-	Key string
+	Blake2Key string
+
+	CrcPolynomial string
 }
 
 func main() {
@@ -43,13 +48,24 @@ func main() {
 			Use: name, Short: fmt.Sprintf("Compute and print the %q digest of stdin.", name),
 			Run: printHash(name, hfn, options),
 		}
+
+		// Flags for all hashes.
 		cmd.Flags().BoolVarP(&options.Base64, "base64", "A", options.Base64,
 			"print hash values encoded as base64")
 		cmd.Flags().BoolVarP(&options.Binary, "binary", "b", options.Binary,
 			"print hash values directly without encoding")
-		if strings.HasPrefix(name, "blake2") {
-			cmd.Flags().StringVarP(&options.Key, "key", "k", options.Key,
+
+		// Hash-specific flags.
+		switch true {
+		case strings.HasPrefix(name, "blake2"):
+			cmd.Flags().StringVarP(&options.Blake2Key, "key", "k", options.Blake2Key,
 				"hex encoded key for use with blake2 family of size 0-64 bytes")
+		case name == "crc32":
+			cmd.Flags().StringVar(&options.CrcPolynomial, "polynomial-table",
+				"ieee", "polynomial constant for table generation, ieee/castagnoli/koopman")
+		case name == "crc64":
+			cmd.Flags().StringVar(&options.CrcPolynomial, "polynomial-table",
+				"iso", "polynomial constant for table generation, iso/ecma")
 		}
 		rootCmd.AddCommand(cmd)
 	}
@@ -65,6 +81,14 @@ func main() {
 }
 
 var hashes = map[string]func(*Options) hash.Hash{
+	"adler32": func(*Options) hash.Hash { return adler32.New() },
+	"crc32": func(o *Options) hash.Hash {
+		return crc32.New(crc32table(o.CrcPolynomial))
+	},
+	"crc64": func(o *Options) hash.Hash {
+		return crc64.New(crc64table(o.CrcPolynomial))
+	},
+
 	"md4": func(*Options) hash.Hash { return md4.New() },
 	"md5": func(*Options) hash.Hash { return md5.New() },
 
@@ -113,8 +137,8 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 func blakeKey(f func([]byte) (hash.Hash, error)) func(*Options) hash.Hash {
 	return func(o *Options) hash.Hash {
 		var key []byte = nil
-		if o.Key != "" {
-			if k, err := hex.DecodeString(o.Key); err != nil {
+		if o.Blake2Key != "" {
+			if k, err := hex.DecodeString(o.Blake2Key); err != nil {
 				log.Fatalf("FATAL: invalid hex encoded key: %v.", err)
 			} else if len(k) > 64 {
 				log.Fatalf("FATAL: key is too long, got %v byte, wanted <= 64.", len(k))
@@ -129,4 +153,29 @@ func blakeKey(f func([]byte) (hash.Hash, error)) func(*Options) hash.Hash {
 		}
 		return h
 	}
+}
+
+func crc32table(s string) *crc32.Table {
+	polynomial, ok := map[string]uint32{
+		"castagnoli": crc32.Castagnoli,
+		"ieee":       crc32.IEEE,
+		"koopman":    crc32.Koopman,
+	}[s]
+
+	if !ok {
+		log.Fatalf("FATAL: invalid crc32 polynomial name %q, try ieee/castagnoli/koopman.", s)
+	}
+	return crc32.MakeTable(polynomial)
+}
+
+func crc64table(s string) *crc64.Table {
+	polynomial, ok := map[string]uint64{
+		"ecma": crc64.ECMA,
+		"iso":  crc64.ISO,
+	}[s]
+
+	if !ok {
+		log.Fatalf("FATAL: invalid crc64 polynomial name %q, try iso/ecma.", s)
+	}
+	return crc64.MakeTable(polynomial)
 }
