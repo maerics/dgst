@@ -52,7 +52,7 @@ $ echo -n | dgst md5
 d41d8cd98f00b204e9800998ecf8427e
 $ echo -n | dgst md5 --binary | xxd
 00000000: d41d 8cd9 8f00 b204 e980 0998 ecf8 427e  ..............B~
-$ echo -n | dgst blake2-256 --base64
+$ echo -n | dgst md5 --base64
 1B2M2Y8AsgTpgAmY7PhCfg==
 $ echo -n | dgst blake2-256 --base64
 DldRwCblQ7Loqy6wYJnaodHl30d3j3eH+qtFzfEv46g=
