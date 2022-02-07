@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/hmac"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
@@ -18,6 +19,7 @@ type Options struct {
 	FormatBinary bool
 
 	Blake2Key string
+	HmacKey   string
 
 	Crc32Polynomial string
 	Crc64Polynomial string
@@ -45,11 +47,13 @@ func main() {
 			"print hash values encoded as base64")
 		cmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 			"print hash values directly without encoding")
+		cmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
+			"secret key for HMAC computation")
 
 		// Hash-specific flags.
 		switch true {
 		case strings.HasPrefix(name, "blake2"):
-			cmd.Flags().StringVarP(&options.Blake2Key, "key", "k", options.Blake2Key,
+			cmd.Flags().StringVar(&options.Blake2Key, "blake-key", options.Blake2Key,
 				"hex encoded key for use with blake2 family of size 0-64 bytes")
 		case name == "crc32":
 			cmd.Flags().StringVar(&options.Crc32Polynomial, "polynomial-table",
@@ -66,6 +70,8 @@ func main() {
 		"print hash values encoded as base64")
 	rootCmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 		"print hash values directly without encoding")
+	rootCmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
+		"secret key for HMAC computation")
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
@@ -74,7 +80,15 @@ func main() {
 
 func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobra.Command, []string) {
 	return func(c *cobra.Command, s []string) {
-		h := hfn(o)
+		var h hash.Hash
+
+		if o.HmacKey == "" {
+			h = hfn(o)
+		} else {
+			f := func() hash.Hash { return hfn(o) }
+			h = hmac.New(f, []byte(o.HmacKey))
+		}
+
 		if _, err := io.Copy(h, os.Stdin); err != nil {
 			log.Fatalf("FATAL: failed to compute %q hash from stdin: %v", name, err)
 		}

@@ -51,7 +51,7 @@ Use "dgst [command] --help" for more information about a command.
 ```
 
 ## Examples
-```
+```sh
 $ echo -n | dgst md5
 d41d8cd98f00b204e9800998ecf8427e
 $ echo -n | dgst md5 --binary | xxd
@@ -60,10 +60,11 @@ $ echo -n | dgst md5 --base64
 1B2M2Y8AsgTpgAmY7PhCfg==
 $ echo -n | dgst blake2-256 --base64
 DldRwCblQ7Loqy6wYJnaodHl30d3j3eH+qtFzfEv46g=
-$ echo -n | dgst blake2-256 --base64 --key=deadbeef
+$ echo -n | dgst blake2-256 --blake-key=deadbeef --base64
 aSYX2bvjUGB+3hPEZrOTwL7m8UR0ESVGP5Zm1z5kh2U=
 $ echo OK | dgst crc32 --polynomial-table=castagnoli
 d6a6fc12
-$ echo OK | dgst crc64 --polynomial-table=ecma
-23ecc094c773eafd
+$ echo -n 'The quick brown fox jumps over the lazy dog' \
+    | dgst sha1 --hmac-key='key'
+de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9
 ```
