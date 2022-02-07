@@ -25,6 +25,7 @@ Available Commands:
   help        Help about any command
   md4         Compute and print the "md4" digest of stdin.
   md5         Compute and print the "md5" digest of stdin.
+  ripemd128   Compute and print the "ripemd128" digest of stdin.
   ripemd160   Compute and print the "ripemd160" digest of stdin.
   sha1        Compute and print the "sha1" digest of stdin.
   sha224      Compute and print the "sha224" digest of stdin.

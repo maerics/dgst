@@ -15,6 +15,7 @@ import (
 
 	"github.com/cxmcc/tiger"
 	"github.com/jzelinskie/whirlpool"
+	"github.com/zhimoe/ripemd128"
 	"golang.org/x/crypto/blake2b"
 	"golang.org/x/crypto/md4"
 	"golang.org/x/crypto/ripemd160"
@@ -52,6 +53,7 @@ var hashes = map[string]func(*Options) hash.Hash{
 	"blake2-384": blakeKey(blake2b.New384),
 	"blake2-512": blakeKey(blake2b.New512),
 
+	"ripemd128": func(*Options) hash.Hash { return ripemd128.New() },
 	"ripemd160": func(*Options) hash.Hash { return ripemd160.New() },
 
 	"tiger":     func(o *Options) hash.Hash { return tiger.New() },
@@ -60,6 +62,9 @@ var hashes = map[string]func(*Options) hash.Hash{
 }
 
 var aliases = map[string][]string{
+	"ripemd128": {"ripemd-128"},
+	"ripemd160": {"ripemd-160"},
+
 	"sha1":       {"sha-1"},
 	"sha224":     {"sha-224"},
 	"sha256":     {"sha-256"},
