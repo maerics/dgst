@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -17,6 +18,7 @@ import (
 type Options struct {
 	FormatBase64 bool
 	FormatBinary bool
+	FormatSRI    bool
 
 	Blake2Key string
 	HmacKey   string
@@ -47,6 +49,8 @@ func main() {
 			"print hash values encoded as base64")
 		cmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 			"print hash values directly without encoding")
+		cmd.Flags().BoolVarP(&options.FormatSRI, "sri", "s", options.FormatSRI,
+			"print Subresource Integrity value string")
 		cmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
 			"secret key for HMAC computation")
 
@@ -70,6 +74,8 @@ func main() {
 		"print hash values encoded as base64")
 	rootCmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 		"print hash values directly without encoding")
+	rootCmd.Flags().BoolVarP(&options.FormatSRI, "sri", "s", options.FormatSRI,
+		"print Subresource Integrity value string")
 	rootCmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
 		"secret key for HMAC computation")
 
@@ -94,17 +100,42 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 		}
 		hash := h.Sum(nil)
 
+		formats := getFormats(o)
 		switch true {
-		case o.FormatBase64 && o.FormatBinary:
-			log.Fatalf(`FATAL: conflicting flags "base64" and "binary".`)
+		case len(formats) > 1:
+			log.Fatalf("FATAL: conflicting format flags: %v", quoteFormats(formats))
 		case o.FormatBase64:
 			fmt.Println(base64.StdEncoding.EncodeToString(hash))
 		case o.FormatBinary:
 			if n, err := os.Stdout.Write(hash); err != nil || n != len(hash) {
 				log.Fatalf("FATAL: failed to write hash to stdout: %v", err)
 			}
+		case o.FormatSRI:
+			fmt.Println(name + "-" + base64.StdEncoding.EncodeToString(hash))
 		default:
 			fmt.Println(hex.EncodeToString(hash))
 		}
 	}
+}
+
+func getFormats(o *Options) []string {
+	selectedFormats := []string{}
+	for k, v := range map[string]bool{
+		"base64": o.FormatBase64,
+		"binary": o.FormatBinary,
+		"sri":    o.FormatSRI,
+	} {
+		if v {
+			selectedFormats = append(selectedFormats, k)
+		}
+	}
+	return selectedFormats
+}
+
+func quoteFormats(ss []string) string {
+	for i, s := range ss {
+		ss[i] = fmt.Sprintf(`"--%v"`, s)
+	}
+	sort.Slice(ss, func(i, j int) bool { return ss[i] < ss[j] })
+	return strings.Join(ss, ", ")
 }
