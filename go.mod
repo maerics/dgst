@@ -1,4 +1,4 @@
-module dgst
+module github.com/maerics/dgst
 
 go 1.14
 
