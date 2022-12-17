@@ -13,14 +13,18 @@ import (
 	"hash/fnv"
 	"log"
 
+	"github.com/aviddiviner/go-murmur"
 	"github.com/cxmcc/tiger"
 	"github.com/jzelinskie/whirlpool"
+	"github.com/twmb/murmur3"
 	"github.com/zhimoe/ripemd128"
 	"golang.org/x/crypto/blake2b"
 	"golang.org/x/crypto/md4"
 	"golang.org/x/crypto/ripemd160"
 	"golang.org/x/crypto/sha3"
 )
+
+const murmur2seed uint32 = 0x9747b28c
 
 var hashes = map[string]func(*Options) hash.Hash{
 	"adler32": func(*Options) hash.Hash { return adler32.New() },
@@ -56,6 +60,11 @@ var hashes = map[string]func(*Options) hash.Hash{
 	"ripemd128": func(*Options) hash.Hash { return ripemd128.New() },
 	"ripemd160": func(*Options) hash.Hash { return ripemd160.New() },
 
+	"murmur":      func(o *Options) hash.Hash { return murmur.New32(murmur2seed) },
+	"murmur3":     func(o *Options) hash.Hash { return murmur3.New32() },
+	"murmur3-64":  func(o *Options) hash.Hash { return murmur3.New64() },
+	"murmur3-128": func(o *Options) hash.Hash { return murmur3.New128() },
+
 	"tiger":     func(o *Options) hash.Hash { return tiger.New() },
 	"tiger2":    func(o *Options) hash.Hash { return tiger.New2() },
 	"whirlpool": func(o *Options) hash.Hash { return whirlpool.New() },
@@ -83,6 +92,8 @@ var aliases = map[string][]string{
 	"fnv1a-64":  {"fnv-1a-64"},
 	"fnv1-128":  {"fnv-1-128"},
 	"fnv1a-128": {"fnv-1a-128"},
+
+	"murmur": {"murmur2"},
 }
 
 func blakeKey(f func([]byte) (hash.Hash, error)) func(*Options) hash.Hash {

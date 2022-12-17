@@ -20,6 +20,8 @@ type Options struct {
 	FormatBinary bool
 	FormatSRI    bool
 
+	SeedUint32 uint32
+
 	Blake2Key string
 	HmacKey   string
 
@@ -49,7 +51,7 @@ func main() {
 			"print hash values encoded as base64")
 		cmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 			"print hash values directly without encoding")
-		cmd.Flags().BoolVarP(&options.FormatSRI, "sri", "s", options.FormatSRI,
+		cmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 			"print Subresource Integrity value string")
 		cmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
 			"secret key for HMAC computation")
@@ -65,6 +67,8 @@ func main() {
 		case name == "crc64":
 			cmd.Flags().StringVar(&options.Crc64Polynomial, "polynomial-table",
 				"iso", "polynomial constant for table generation, iso/ecma")
+		case strings.HasPrefix(name, "murmur"): // TODO
+			cmd.Flags().Uint32Var(&options.SeedUint32, "seed", 0, "seed value")
 		}
 		rootCmd.AddCommand(cmd)
 	}
@@ -74,7 +78,7 @@ func main() {
 		"print hash values encoded as base64")
 	rootCmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 		"print hash values directly without encoding")
-	rootCmd.Flags().BoolVarP(&options.FormatSRI, "sri", "s", options.FormatSRI,
+	rootCmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 		"print Subresource Integrity value string")
 	rootCmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
 		"secret key for HMAC computation")
