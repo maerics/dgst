@@ -25,6 +25,10 @@ Available Commands:
   help        Help about any command
   md4         Compute and print the "md4" digest of stdin.
   md5         Compute and print the "md5" digest of stdin.
+  murmur      Compute and print the "murmur" digest of stdin.
+  murmur3     Compute and print the "murmur3" digest of stdin.
+  murmur3-128 Compute and print the "murmur3-128" digest of stdin.
+  murmur3-64  Compute and print the "murmur3-64" digest of stdin.
   ripemd128   Compute and print the "ripemd128" digest of stdin.
   ripemd160   Compute and print the "ripemd160" digest of stdin.
   sha1        Compute and print the "sha1" digest of stdin.
@@ -43,9 +47,11 @@ Available Commands:
   whirlpool   Compute and print the "whirlpool" digest of stdin.
 
 Flags:
-  -A, --base64   print hash values encoded as base64
-  -b, --binary   print hash values directly without encoding
-  -h, --help     help for dgst
+  -A, --base64            print hash values encoded as base64
+  -b, --binary            print hash values directly without encoding
+  -h, --help              help for dgst
+      --hmac-key string   secret key for HMAC computation
+      --sri               print Subresource Integrity value string
 
 Use "dgst [command] --help" for more information about a command.
 ```
