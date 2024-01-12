@@ -29,15 +29,19 @@ type Options struct {
 	Crc64Polynomial string
 }
 
-func main() {
-	log.SetFlags(0)
-	options := &Options{}
-
-	rootCmd := &cobra.Command{
+func newDgstCmd() *cobra.Command {
+	return &cobra.Command{
 		Use:               "dgst",
 		Short:             "Compute and print message digest hash values of stdin.",
 		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
 	}
+}
+
+var dgstCmd = newDgstCmd()
+
+func main() {
+	log.SetFlags(0)
+	options := &Options{}
 
 	for name, hfn := range hashes {
 		cmd := &cobra.Command{
@@ -70,20 +74,20 @@ func main() {
 		case strings.HasPrefix(name, "murmur"): // TODO
 			cmd.Flags().Uint32Var(&options.SeedUint32, "seed", 0, "seed value")
 		}
-		rootCmd.AddCommand(cmd)
+		dgstCmd.AddCommand(cmd)
 	}
 
 	// Global flags.
-	rootCmd.Flags().BoolVarP(&options.FormatBase64, "base64", "A", options.FormatBase64,
+	dgstCmd.Flags().BoolVarP(&options.FormatBase64, "base64", "A", options.FormatBase64,
 		"print hash values encoded as base64")
-	rootCmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
+	dgstCmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 		"print hash values directly without encoding")
-	rootCmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
+	dgstCmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 		"print Subresource Integrity value string")
-	rootCmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
+	dgstCmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
 		"secret key for HMAC computation")
 
-	if err := rootCmd.Execute(); err != nil {
+	if err := dgstCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
@@ -91,6 +95,8 @@ func main() {
 func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobra.Command, []string) {
 	return func(c *cobra.Command, s []string) {
 		var h hash.Hash
+		stdin := c.InOrStdin()
+		stdout := c.OutOrStdout()
 
 		if o.HmacKey == "" {
 			h = hfn(o)
@@ -99,7 +105,7 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 			h = hmac.New(f, []byte(o.HmacKey))
 		}
 
-		if _, err := io.Copy(h, os.Stdin); err != nil {
+		if _, err := io.Copy(h, stdin); err != nil {
 			log.Fatalf("FATAL: failed to compute %q hash from stdin: %v", name, err)
 		}
 		hash := h.Sum(nil)
@@ -109,15 +115,15 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 		case len(formats) > 1:
 			log.Fatalf("FATAL: conflicting format flags: %v", quoteFormats(formats))
 		case o.FormatBase64:
-			fmt.Println(base64.StdEncoding.EncodeToString(hash))
+			fmt.Fprintln(stdout, base64.StdEncoding.EncodeToString(hash))
 		case o.FormatBinary:
-			if n, err := os.Stdout.Write(hash); err != nil || n != len(hash) {
+			if n, err := stdout.Write(hash); err != nil || n != len(hash) {
 				log.Fatalf("FATAL: failed to write hash to stdout: %v", err)
 			}
 		case o.FormatSRI:
-			fmt.Println(name + "-" + base64.StdEncoding.EncodeToString(hash))
+			fmt.Fprintln(stdout, name+"-"+base64.StdEncoding.EncodeToString(hash))
 		default:
-			fmt.Println(hex.EncodeToString(hash))
+			fmt.Fprintln(stdout, hex.EncodeToString(hash))
 		}
 	}
 }
