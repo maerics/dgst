@@ -63,6 +63,7 @@ func TestKnownOutputs(t *testing.T) {
 		// Various
 		{[]string{"blake2-256", "--base64"}, nil, []byte("DldRwCblQ7Loqy6wYJnaodHl30d3j3eH+qtFzfEv46g=\n")},
 		{[]string{"blake2-256", "--blake-key=deadbeef", "--base64"}, nil, []byte("aSYX2bvjUGB+3hPEZrOTwL7m8UR0ESVGP5Zm1z5kh2U=\n")},
+		{[]string{"crc32", "--polynomial-table=castagnoli"}, strings.NewReader("OK\n"), []byte("d6a6fc12\n")},
 	} {
 		dgstCmd = newDgstCmd()
 		dgstCmd.SetArgs(example.args)
