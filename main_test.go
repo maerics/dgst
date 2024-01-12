@@ -55,7 +55,16 @@ func TestKnownOutputs(t *testing.T) {
 		{[]string{"md5", "--sri"}, nil, []byte("md5-1B2M2Y8AsgTpgAmY7PhCfg==\n")},
 		{[]string{"md5", "--hmac-key", "key"}, strings.NewReader(theQuickBrownFox), []byte("80070713463e7749b90c2dc24911e275\n")},
 
+		// SHA family
+		{[]string{"sha1"}, nil, []byte("da39a3ee5e6b4b0d3255bfef95601890afd80709\n")},
+		{[]string{"sha-1"}, nil, []byte("da39a3ee5e6b4b0d3255bfef95601890afd80709\n")},
+		{[]string{"sha256"}, nil, []byte("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\n")},
+		{[]string{"sha-256"}, nil, []byte("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\n")},
+		{[]string{"sha512"}, nil, []byte("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n")},
+		{[]string{"sha-512"}, nil, []byte("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n")},
+
 		// HMAC
+		{[]string{"md5", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("80070713463e7749b90c2dc24911e275\n")},
 		{[]string{"sha1", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9\n")},
 		{[]string{"sha256", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8\n")},
 		{[]string{"sha512", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("b42af09057bac1e2d41708e48a902e09b5ff7f12ab428a4fe86653c73dd248fb82f948a549f7b791a5b41915ee4d1ec3935357e4e2317250d0372afa2ebeeb3a\n")},
