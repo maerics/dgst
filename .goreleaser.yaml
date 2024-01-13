@@ -65,6 +65,6 @@ brews:
     # Repository to push the generated files to.
     repository:
       owner: maerics
-      name: dgst
+      name: homebrew-datautils
       branch: master
       token: "{{ .Env.GITHUB_TOKEN }}"
