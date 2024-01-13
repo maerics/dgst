@@ -20,7 +20,8 @@ archives:
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
-      {{- title .Os }}_
+      {{- .Tag }}_
+      {{- .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
@@ -36,3 +37,34 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - name: dgst
+    goarm: 6
+    goamd64: v1
+    url_template: "https://github.com/maerics/dgst/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    download_strategy: CurlDownloadStrategy
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    folder: Formula
+    homepage: "https://github.com/maerics/dgst"
+    description: "Compute and print message digest hash values of stdin."
+    license: "MIT"
+
+    # Setting this will prevent goreleaser to actually try to commit the updated
+    # formula - instead, the formula file will be stored on the dist folder only,
+    # leaving the responsibility of publishing it to the user.
+    # If set to auto, the release will not be uploaded to the homebrew tap
+    # in case there is an indicator for prerelease in the tag e.g. v1.0.0-rc1
+    #
+    # Templates: allowed
+    # skip_upload: true
+
+    # Repository to push the generated files to.
+    repository:
+      owner: maerics
+      name: dgst
+      branch: main
+      token: "{{ .Env.GITHUB_PERSONAL_AUTH_TOKEN }}"
