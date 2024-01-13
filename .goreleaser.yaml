@@ -66,5 +66,5 @@ brews:
     repository:
       owner: maerics
       name: homebrew-datautils
-      branch: master
+      branch: main
       token: "{{ .Env.GITHUB_TOKEN }}"
