@@ -13,7 +13,7 @@ func TestMainHelp(t *testing.T) {
 	helpArgs := [][]string{{}, {"-h"}, {"--help"}}
 
 	helpMessages := []*regexp.Regexp{
-		regexp.MustCompile(`^Compute and print message digest hash values of stdin.\n`),
+		regexp.MustCompile(`^Print message digest hashes of stdin.\n`),
 		regexp.MustCompile(`Usage:\n  dgst \[command\]`),
 		regexp.MustCompile(`Flags:\n  -`),
 		regexp.MustCompile(`\nUse "dgst \[command\] --help" for more information about a command.\n$`),
@@ -48,7 +48,7 @@ func TestKnownOutputs(t *testing.T) {
 	}{
 		// MD5 tests including all flag combinations.
 		{[]string{"md5"}, nil, []byte("d41d8cd98f00b204e9800998ecf8427e\n")},
-		{[]string{"md5", "-A"}, nil, []byte("1B2M2Y8AsgTpgAmY7PhCfg==\n")},
+		{[]string{"md5", "-a"}, nil, []byte("1B2M2Y8AsgTpgAmY7PhCfg==\n")},
 		{[]string{"md5", "--base64"}, nil, []byte("1B2M2Y8AsgTpgAmY7PhCfg==\n")},
 		{[]string{"md5", "-b"}, nil, []byte{0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e}},
 		{[]string{"md5", "--binary"}, nil, []byte{0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e}},

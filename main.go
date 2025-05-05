@@ -32,7 +32,7 @@ type Options struct {
 func newDgstCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:               "dgst",
-		Short:             "Compute and print message digest hash values of stdin.",
+		Short:             "Print message digest hashes of stdin.",
 		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
 	}
 }
@@ -46,12 +46,12 @@ func main() {
 	for name, hfn := range hashes {
 		cmd := &cobra.Command{
 			Use: name, Aliases: aliases[name],
-			Short: fmt.Sprintf("Compute and print the %q digest of stdin.", name),
+			Short: fmt.Sprintf("Digest input as %v", strings.ToUpper(name)),
 			Run:   printHash(name, hfn, options),
 		}
 
 		// Flags for all hashes.
-		cmd.Flags().BoolVarP(&options.FormatBase64, "base64", "A", options.FormatBase64,
+		cmd.Flags().BoolVarP(&options.FormatBase64, "base64", "a", options.FormatBase64,
 			"print hash values encoded as base64")
 		cmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 			"print hash values directly without encoding")
@@ -78,7 +78,7 @@ func main() {
 	}
 
 	// Global flags.
-	dgstCmd.Flags().BoolVarP(&options.FormatBase64, "base64", "A", options.FormatBase64,
+	dgstCmd.Flags().BoolVarP(&options.FormatBase64, "base64", "a", options.FormatBase64,
 		"print hash values encoded as base64")
 	dgstCmd.Flags().BoolVarP(&options.FormatBinary, "binary", "b", options.FormatBinary,
 		"print hash values directly without encoding")

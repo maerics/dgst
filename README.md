@@ -1,53 +1,53 @@
 # dgst
 
-Compute and print message digest hash values of stdin.
+Compute and print message digest hashes of stdin.
 
 ## Usage
 ```
-Compute and print message digest hash values of stdin.
+Print message digest hashes of stdin.
 
 Usage:
   dgst [command]
 
 Available Commands:
-  adler32     Compute and print the "adler32" digest of stdin.
-  blake2-256  Compute and print the "blake2-256" digest of stdin.
-  blake2-384  Compute and print the "blake2-384" digest of stdin.
-  blake2-512  Compute and print the "blake2-512" digest of stdin.
-  crc32       Compute and print the "crc32" digest of stdin.
-  crc64       Compute and print the "crc64" digest of stdin.
-  fnv1-128    Compute and print the "fnv1-128" digest of stdin.
-  fnv1-32     Compute and print the "fnv1-32" digest of stdin.
-  fnv1-64     Compute and print the "fnv1-64" digest of stdin.
-  fnv1a-128   Compute and print the "fnv1a-128" digest of stdin.
-  fnv1a-32    Compute and print the "fnv1a-32" digest of stdin.
-  fnv1a-64    Compute and print the "fnv1a-64" digest of stdin.
+  adler32     Digest input as ADLER32
+  blake2-256  Digest input as BLAKE2-256
+  blake2-384  Digest input as BLAKE2-384
+  blake2-512  Digest input as BLAKE2-512
+  crc32       Digest input as CRC32
+  crc64       Digest input as CRC64
+  fnv1-128    Digest input as FNV1-128
+  fnv1-32     Digest input as FNV1-32
+  fnv1-64     Digest input as FNV1-64
+  fnv1a-128   Digest input as FNV1A-128
+  fnv1a-32    Digest input as FNV1A-32
+  fnv1a-64    Digest input as FNV1A-64
   help        Help about any command
-  md4         Compute and print the "md4" digest of stdin.
-  md5         Compute and print the "md5" digest of stdin.
-  murmur      Compute and print the "murmur" digest of stdin.
-  murmur3     Compute and print the "murmur3" digest of stdin.
-  murmur3-128 Compute and print the "murmur3-128" digest of stdin.
-  murmur3-64  Compute and print the "murmur3-64" digest of stdin.
-  ripemd128   Compute and print the "ripemd128" digest of stdin.
-  ripemd160   Compute and print the "ripemd160" digest of stdin.
-  sha1        Compute and print the "sha1" digest of stdin.
-  sha224      Compute and print the "sha224" digest of stdin.
-  sha256      Compute and print the "sha256" digest of stdin.
-  sha3-224    Compute and print the "sha3-224" digest of stdin.
-  sha3-256    Compute and print the "sha3-256" digest of stdin.
-  sha3-384    Compute and print the "sha3-384" digest of stdin.
-  sha3-512    Compute and print the "sha3-512" digest of stdin.
-  sha384      Compute and print the "sha384" digest of stdin.
-  sha512      Compute and print the "sha512" digest of stdin.
-  sha512/224  Compute and print the "sha512/224" digest of stdin.
-  sha512/256  Compute and print the "sha512/256" digest of stdin.
-  tiger       Compute and print the "tiger" digest of stdin.
-  tiger2      Compute and print the "tiger2" digest of stdin.
-  whirlpool   Compute and print the "whirlpool" digest of stdin.
+  md4         Digest input as MD4
+  md5         Digest input as MD5
+  murmur      Digest input as MURMUR
+  murmur3     Digest input as MURMUR3
+  murmur3-128 Digest input as MURMUR3-128
+  murmur3-64  Digest input as MURMUR3-64
+  ripemd128   Digest input as RIPEMD128
+  ripemd160   Digest input as RIPEMD160
+  sha1        Digest input as SHA1
+  sha224      Digest input as SHA224
+  sha256      Digest input as SHA256
+  sha3-224    Digest input as SHA3-224
+  sha3-256    Digest input as SHA3-256
+  sha3-384    Digest input as SHA3-384
+  sha3-512    Digest input as SHA3-512
+  sha384      Digest input as SHA384
+  sha512      Digest input as SHA512
+  sha512/224  Digest input as SHA512/224
+  sha512/256  Digest input as SHA512/256
+  tiger       Digest input as TIGER
+  tiger2      Digest input as TIGER2
+  whirlpool   Digest input as WHIRLPOOL
 
 Flags:
-  -A, --base64            print hash values encoded as base64
+  -a, --base64            print hash values encoded as base64
   -b, --binary            print hash values directly without encoding
   -h, --help              help for dgst
       --hmac-key string   secret key for HMAC computation
