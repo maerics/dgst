@@ -8,7 +8,6 @@ import (
 	"hash"
 	"io"
 	"log"
-	"os"
 	"sort"
 	"strings"
 
@@ -47,6 +46,7 @@ func main() {
 		cmd := &cobra.Command{
 			Use: name, Aliases: aliases[name],
 			Short: fmt.Sprintf("Digest input as %v", strings.ToUpper(name)),
+			Args:  cobra.NoArgs,
 			Run:   printHash(name, hfn, options),
 		}
 
@@ -88,7 +88,7 @@ func main() {
 		"secret key for HMAC computation")
 
 	if err := dgstCmd.Execute(); err != nil {
-		os.Exit(1)
+		log.Fatalf("FATAL: %v", err)
 	}
 }
 
