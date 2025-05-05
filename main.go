@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"hash"
 	"io"
@@ -37,6 +38,7 @@ func newDgstCmd() *cobra.Command {
 }
 
 var dgstCmd = newDgstCmd()
+var printVersion bool
 
 func main() {
 	log.SetFlags(0)
@@ -45,7 +47,7 @@ func main() {
 	for name, hfn := range hashes {
 		cmd := &cobra.Command{
 			Use: name, Aliases: aliases[name],
-			Short: fmt.Sprintf("Digest input as %v", strings.ToUpper(name)),
+			Short: fmt.Sprintf("Digest input using %v", strings.ToUpper(name)),
 			Args:  cobra.NoArgs,
 			Run:   printHash(name, hfn, options),
 		}
@@ -76,6 +78,32 @@ func main() {
 		}
 		dgstCmd.AddCommand(cmd)
 	}
+
+	versionCmd := &cobra.Command{
+		Use:               "version",
+		Aliases:           []string{"v"},
+		Short:             "Print the current version",
+		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			bs, err := json.MarshalIndent(parseVersionInfo(), "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(bs))
+			return nil
+		},
+	}
+
+	dgstCmd.Run = func(cmd *cobra.Command, args []string) {
+		if printVersion {
+			fmt.Println(getVersionString())
+		} else {
+			dgstCmd.Help()
+		}
+	}
+
+	dgstCmd.AddCommand(versionCmd)
+	dgstCmd.Flags().BoolVarP(&printVersion, "version", "v", false, "print the current version")
 
 	// Global flags.
 	dgstCmd.Flags().BoolVarP(&options.FormatBase64, "base64", "a", options.FormatBase64,
@@ -148,4 +176,32 @@ func quoteFormats(ss []string) string {
 	}
 	sort.Slice(ss, func(i, j int) bool { return ss[i] < ss[j] })
 	return strings.Join(ss, ", ")
+}
+
+// Linked at build time.
+var version, commit, date string
+
+type versionInfo struct {
+	Version   string `json:"version,omitempty"`
+	Commit    string `json:"commit,omitempty"`
+	Timestamp string `json:"timestamp,omitempty"`
+}
+
+func parseVersionInfo() versionInfo {
+	return versionInfo{
+		Version:   version,
+		Commit:    commit,
+		Timestamp: date,
+	}
+}
+
+func getVersionString() string {
+	versionInfo := parseVersionInfo()
+
+	if versionInfo.Version == "" {
+		return "(unknown)"
+	}
+
+	return fmt.Sprintf("v%v, commit=%v, timestamp=%v",
+		versionInfo.Version, versionInfo.Commit, versionInfo.Timestamp)
 }

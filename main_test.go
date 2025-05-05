@@ -14,7 +14,7 @@ func TestMainHelp(t *testing.T) {
 
 	helpMessages := []*regexp.Regexp{
 		regexp.MustCompile(`^Print message digest hashes of stdin.\n`),
-		regexp.MustCompile(`Usage:\n  dgst \[command\]`),
+		regexp.MustCompile(`Usage:\n  dgst \[flags\]\n  dgst \[command\]`),
 		regexp.MustCompile(`Flags:\n  -`),
 		regexp.MustCompile(`\nUse "dgst \[command\] --help" for more information about a command.\n$`),
 	}
