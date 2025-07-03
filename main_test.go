@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"io"
+	"os"
+	"path"
 	"reflect"
 	"regexp"
 	"strings"
@@ -40,6 +42,11 @@ func TestMainHelp(t *testing.T) {
 func TestKnownOutputs(t *testing.T) {
 	const theQuickBrownFox = "The quick brown fox jumps over the lazy dog"
 
+	hmacKeyFilename := path.Join(os.TempDir(), "hmac-key.key")
+	if err := os.WriteFile(hmacKeyFilename, []byte("key"), os.FileMode(0o0644)); err != nil {
+		t.Fatal(err)
+	}
+
 	// args, stdin, output
 	for i, example := range []struct {
 		args   []string
@@ -53,7 +60,7 @@ func TestKnownOutputs(t *testing.T) {
 		{[]string{"md5", "-b"}, nil, []byte{0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e}},
 		{[]string{"md5", "--binary"}, nil, []byte{0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e}},
 		{[]string{"md5", "--sri"}, nil, []byte("md5-1B2M2Y8AsgTpgAmY7PhCfg==\n")},
-		{[]string{"md5", "--hmac-key", "key"}, strings.NewReader(theQuickBrownFox), []byte("80070713463e7749b90c2dc24911e275\n")},
+		{[]string{"md5", "--hmac-key", hmacKeyFilename}, strings.NewReader(theQuickBrownFox), []byte("80070713463e7749b90c2dc24911e275\n")},
 
 		// SHA family
 		{[]string{"sha1"}, nil, []byte("da39a3ee5e6b4b0d3255bfef95601890afd80709\n")},
@@ -64,10 +71,10 @@ func TestKnownOutputs(t *testing.T) {
 		{[]string{"sha-512"}, nil, []byte("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e\n")},
 
 		// HMAC
-		{[]string{"md5", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("80070713463e7749b90c2dc24911e275\n")},
-		{[]string{"sha1", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9\n")},
-		{[]string{"sha256", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8\n")},
-		{[]string{"sha512", "--hmac-key=key"}, strings.NewReader(theQuickBrownFox), []byte("b42af09057bac1e2d41708e48a902e09b5ff7f12ab428a4fe86653c73dd248fb82f948a549f7b791a5b41915ee4d1ec3935357e4e2317250d0372afa2ebeeb3a\n")},
+		{[]string{"md5", "--hmac-key", hmacKeyFilename}, strings.NewReader(theQuickBrownFox), []byte("80070713463e7749b90c2dc24911e275\n")},
+		{[]string{"sha1", "--hmac-key", hmacKeyFilename}, strings.NewReader(theQuickBrownFox), []byte("de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9\n")},
+		{[]string{"sha256", "--hmac-key", hmacKeyFilename}, strings.NewReader(theQuickBrownFox), []byte("f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8\n")},
+		{[]string{"sha512", "--hmac-key", hmacKeyFilename}, strings.NewReader(theQuickBrownFox), []byte("b42af09057bac1e2d41708e48a902e09b5ff7f12ab428a4fe86653c73dd248fb82f948a549f7b791a5b41915ee4d1ec3935357e4e2317250d0372afa2ebeeb3a\n")},
 
 		// Various
 		{[]string{"blake2-256", "--base64"}, nil, []byte("DldRwCblQ7Loqy6wYJnaodHl30d3j3eH+qtFzfEv46g=\n")},

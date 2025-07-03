@@ -9,6 +9,7 @@ import (
 	"hash"
 	"io"
 	"log"
+	"os"
 	"sort"
 	"strings"
 
@@ -60,7 +61,7 @@ func main() {
 		cmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 			"print Subresource Integrity value string")
 		cmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
-			"secret key for HMAC computation")
+			"filename containign key for HMAC computation")
 
 		// Hash-specific flags.
 		switch true {
@@ -130,7 +131,11 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 			h = hfn(o)
 		} else {
 			f := func() hash.Hash { return hfn(o) }
-			h = hmac.New(f, []byte(o.HmacKey))
+			hmacKey, err := os.ReadFile(o.HmacKey)
+			if err != nil {
+				log.Fatalf("FATAL: failed to read hmac key from %q: %v", o.HmacKey, err)
+			}
+			h = hmac.New(f, hmacKey)
 		}
 
 		if _, err := io.Copy(h, stdin); err != nil {
