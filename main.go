@@ -61,7 +61,7 @@ func main() {
 		cmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 			"print Subresource Integrity value string")
 		cmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
-			"filename containign key for HMAC computation")
+			"filename containing key for HMAC computation")
 
 		// Hash-specific flags.
 		switch true {
@@ -114,7 +114,7 @@ func main() {
 	dgstCmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 		"print Subresource Integrity value string")
 	dgstCmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
-		"secret key for HMAC computation")
+		"filename containing key for HMAC computation")
 
 	if err := dgstCmd.Execute(); err != nil {
 		log.Fatalf("FATAL: %v", err)
