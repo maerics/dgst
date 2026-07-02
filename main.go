@@ -4,7 +4,6 @@ import (
 	"crypto/hmac"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"hash"
 	"io"
@@ -82,21 +81,6 @@ func main() {
 		dgstCmd.AddCommand(cmd)
 	}
 
-	versionCmd := &cobra.Command{
-		Use:               "version",
-		Aliases:           []string{"v"},
-		Short:             "Print the current version",
-		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			bs, err := json.MarshalIndent(parseVersionInfo(), "", "  ")
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(bs))
-			return nil
-		},
-	}
-
 	dgstCmd.Run = func(cmd *cobra.Command, args []string) {
 		if printVersion {
 			fmt.Println(getVersionString())
@@ -105,7 +89,6 @@ func main() {
 		}
 	}
 
-	dgstCmd.AddCommand(versionCmd)
 	dgstCmd.Flags().BoolVarP(&printVersion, "version", "v", false, "print the current version")
 
 	// Global flags.

@@ -7,6 +7,7 @@ Compute and print message digest hashes of stdin.
 Print message digest hashes of stdin.
 
 Usage:
+  dgst [flags]
   dgst [command]
 
 Available Commands:
@@ -44,7 +45,6 @@ Available Commands:
   sha512/256  Digest input using SHA512/256
   tiger       Digest input using TIGER
   tiger2      Digest input using TIGER2
-  version     Print the current version
   whirlpool   Digest input using WHIRLPOOL
 
 Flags:
