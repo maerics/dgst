@@ -80,6 +80,16 @@ func TestKnownOutputs(t *testing.T) {
 		{[]string{"blake2-256", "--base64"}, nil, []byte("DldRwCblQ7Loqy6wYJnaodHl30d3j3eH+qtFzfEv46g=\n")},
 		{[]string{"blake2-256", "--blake-key=deadbeef", "--base64"}, nil, []byte("aSYX2bvjUGB+3hPEZrOTwL7m8UR0ESVGP5Zm1z5kh2U=\n")},
 		{[]string{"crc32", "--polynomial-table=castagnoli"}, strings.NewReader("OK\n"), []byte("d6a6fc12\n")},
+
+		// Murmur seeds: default preserves the classic murmur2 constant, but
+		// an explicit --seed=0 is honored rather than falling back to it.
+		{[]string{"murmur"}, strings.NewReader(theQuickBrownFox), []byte("e5809c92\n")},
+		{[]string{"murmur", "--seed=0"}, strings.NewReader(theQuickBrownFox), []byte("53e1b5e5\n")},
+		{[]string{"murmur", "--seed=1234"}, strings.NewReader(theQuickBrownFox), []byte("de7e9d0c\n")},
+		{[]string{"murmur3"}, strings.NewReader(theQuickBrownFox), []byte("2e4ff723\n")},
+		{[]string{"murmur3", "--seed=1234"}, strings.NewReader(theQuickBrownFox), []byte("2783dc8d\n")},
+		{[]string{"murmur3-64", "--seed=42"}, strings.NewReader(theQuickBrownFox), []byte("740dcf93fe0bd5d7\n")},
+		{[]string{"murmur3-128", "--seed=42"}, strings.NewReader(theQuickBrownFox), []byte("740dcf93fe0bd5d7c4546cf4ec705c8f\n")},
 	} {
 		dgstCmd = newDgstCmd()
 		dgstCmd.SetArgs(example.args)

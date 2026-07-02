@@ -22,6 +22,7 @@ type Options struct {
 	FormatSRI    bool
 
 	SeedUint32 uint32
+	SeedSet    bool
 
 	Blake2Key string
 	HmacKey   string
@@ -74,8 +75,9 @@ func main() {
 		case name == "crc64":
 			cmd.Flags().StringVar(&options.Crc64Polynomial, "polynomial-table",
 				"iso", "polynomial constant for table generation, iso/ecma")
-		case strings.HasPrefix(name, "murmur"): // TODO
-			cmd.Flags().Uint32Var(&options.SeedUint32, "seed", 0, "seed value")
+		case strings.HasPrefix(name, "murmur"):
+			cmd.Flags().Uint32Var(&options.SeedUint32, "seed", 0,
+				fmt.Sprintf("seed value (default 0, except murmur which defaults to 0x%x)", murmur2seed))
 		}
 		dgstCmd.AddCommand(cmd)
 	}
@@ -126,6 +128,7 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 		var h hash.Hash
 		stdin := c.InOrStdin()
 		stdout := c.OutOrStdout()
+		o.SeedSet = c.Flags().Changed("seed")
 
 		if o.HmacKey == "" {
 			h = hfn(o)

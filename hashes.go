@@ -26,6 +26,16 @@ import (
 
 const murmur2seed uint32 = 0x9747b28c
 
+// seedOr returns o's seed if --seed was explicitly given, else def; this
+// lets an unset --seed flag fall back to an algorithm's default, while still
+// allowing an explicit --seed=0.
+func seedOr(o *Options, def uint32) uint32 {
+	if o.SeedSet {
+		return o.SeedUint32
+	}
+	return def
+}
+
 var hashes = map[string]func(*Options) hash.Hash{
 	"adler32": func(*Options) hash.Hash { return adler32.New() },
 	"crc32":   func(o *Options) hash.Hash { return crc32.New(crc32table(o.Crc32Polynomial)) },
@@ -60,10 +70,10 @@ var hashes = map[string]func(*Options) hash.Hash{
 	"ripemd128": func(*Options) hash.Hash { return ripemd128.New() },
 	"ripemd160": func(*Options) hash.Hash { return ripemd160.New() },
 
-	"murmur":      func(o *Options) hash.Hash { return murmur.New32(murmur2seed) },
-	"murmur3":     func(o *Options) hash.Hash { return murmur3.New32() },
-	"murmur3-64":  func(o *Options) hash.Hash { return murmur3.New64() },
-	"murmur3-128": func(o *Options) hash.Hash { return murmur3.New128() },
+	"murmur":      func(o *Options) hash.Hash { return murmur.New32(seedOr(o, murmur2seed)) },
+	"murmur3":     func(o *Options) hash.Hash { return murmur3.SeedNew32(o.SeedUint32) },
+	"murmur3-64":  func(o *Options) hash.Hash { return murmur3.SeedNew64(uint64(o.SeedUint32)) },
+	"murmur3-128": func(o *Options) hash.Hash { return murmur3.SeedNew128(uint64(o.SeedUint32), uint64(o.SeedUint32)) },
 
 	"tiger":     func(o *Options) hash.Hash { return tiger.New() },
 	"tiger2":    func(o *Options) hash.Hash { return tiger.New2() },
