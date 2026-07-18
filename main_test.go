@@ -60,6 +60,8 @@ func TestKnownOutputs(t *testing.T) {
 		{[]string{"md5", "-b"}, nil, []byte{0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e}},
 		{[]string{"md5", "--binary"}, nil, []byte{0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e}},
 		{[]string{"md5", "--sri"}, nil, []byte("md5-1B2M2Y8AsgTpgAmY7PhCfg==\n")},
+		{[]string{"md5", "-x"}, nil, []byte("d41d8cd98f00b204e9800998ecf8427e\n")},
+		{[]string{"md5", "--hex"}, nil, []byte("d41d8cd98f00b204e9800998ecf8427e\n")},
 		{[]string{"md5", "--hmac-key", hmacKeyFilename}, strings.NewReader(theQuickBrownFox), []byte("80070713463e7749b90c2dc24911e275\n")},
 
 		// SHA family

@@ -5,3 +5,7 @@
 **Initialization**: bootstrapped bundle from repo state (`main.go`,
 `hashes.go`, `Makefile`, `.goreleaser.yaml`) at commit `d1cb318`. Covers
 CLI structure, supported hash algorithms, and the build/release process.
+
+**Update**: added `--hex`/`-x` format flag to [cli.md](./cli.md) — an
+explicit selector for the previously-implicit-only default hex output;
+now participates in the format-flag conflict check.

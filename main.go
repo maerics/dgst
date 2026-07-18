@@ -19,6 +19,7 @@ type Options struct {
 	FormatBase64 bool
 	FormatBinary bool
 	FormatSRI    bool
+	FormatHex    bool
 
 	SeedUint32 uint32
 	SeedSet    bool
@@ -60,6 +61,8 @@ func main() {
 			"print hash values directly without encoding")
 		cmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 			"print Subresource Integrity value string")
+		cmd.Flags().BoolVarP(&options.FormatHex, "hex", "x", options.FormatHex,
+			"print hash values encoded as hex (default)")
 		cmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
 			"filename containing key for HMAC computation")
 
@@ -98,6 +101,8 @@ func main() {
 		"print hash values directly without encoding")
 	dgstCmd.Flags().BoolVar(&options.FormatSRI, "sri", options.FormatSRI,
 		"print Subresource Integrity value string")
+	dgstCmd.Flags().BoolVarP(&options.FormatHex, "hex", "x", options.FormatHex,
+		"print hash values encoded as hex (default)")
 	dgstCmd.Flags().StringVar(&options.HmacKey, "hmac-key", options.HmacKey,
 		"filename containing key for HMAC computation")
 
@@ -141,6 +146,8 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 			}
 		case o.FormatSRI:
 			fmt.Fprintln(stdout, name+"-"+base64.StdEncoding.EncodeToString(hash))
+		case o.FormatHex:
+			fmt.Fprintln(stdout, hex.EncodeToString(hash))
 		default:
 			fmt.Fprintln(stdout, hex.EncodeToString(hash))
 		}
@@ -153,6 +160,7 @@ func getFormats(o *Options) []string {
 		"base64": o.FormatBase64,
 		"binary": o.FormatBinary,
 		"sri":    o.FormatSRI,
+		"hex":    o.FormatHex,
 	} {
 		if v {
 			selectedFormats = append(selectedFormats, k)

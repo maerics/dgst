@@ -24,13 +24,16 @@ Available on the root command and every hash subcommand:
 | `--base64` | `-a` | print hash value base64-encoded |
 | `--binary` | `-b` | print hash value raw, no encoding |
 | `--sri` | | print as a Subresource Integrity string (`<algo>-<base64>`) |
+| `--hex` | `-x` | print hash value lowercase hex-encoded (same as the default) |
 | `--hmac-key <file>` | | compute HMAC using the key read from `<file>`, instead of a plain digest |
 | `--version` | `-v` | print version/commit/build-timestamp (root command only) |
 
-Default output (no format flag) is lowercase hex.
+Default output (no format flag) is lowercase hex; `--hex`/`-x` makes
+that explicit.
 
-At most one of `--base64` / `--binary` / `--sri` may be set; combining
-two is a fatal error (`getFormats`/`quoteFormats` in `main.go`).
+At most one of `--base64` / `--binary` / `--sri` / `--hex` may be set;
+combining two is a fatal error (`getFormats`/`quoteFormats` in
+`main.go`).
 
 ## Version info
 

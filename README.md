@@ -51,6 +51,7 @@ Flags:
   -a, --base64            print hash values encoded as base64
   -b, --binary            print hash values directly without encoding
   -h, --help              help for dgst
+  -x, --hex               print hash values encoded as hex (default)
       --hmac-key string   filename containing key for HMAC computation
       --sri               print Subresource Integrity value string
   -v, --version           print the current version
