@@ -107,3 +107,29 @@ func TestKnownOutputs(t *testing.T) {
 		}
 	}
 }
+
+func TestSRINonStandardAlgorithmWarning(t *testing.T) {
+	// args, wantWarning
+	for _, example := range []struct {
+		args        []string
+		wantWarning bool
+	}{
+		{[]string{"md5", "--sri"}, true},
+		{[]string{"sha256", "--sri"}, false},
+		{[]string{"sha384", "--sri"}, false},
+		{[]string{"sha512", "--sri"}, false},
+	} {
+		errbuf := &bytes.Buffer{}
+		dgstCmd = newDgstCmd()
+		dgstCmd.SetArgs(example.args)
+		dgstCmd.SetOut(new(bytes.Buffer))
+		dgstCmd.SetErr(errbuf)
+		main()
+
+		gotWarning := strings.Contains(errbuf.String(), "WARNING")
+		if gotWarning != example.wantWarning {
+			t.Fatalf("args=%#v: wanted warning=%v, got stderr output %q",
+				example.args, example.wantWarning, errbuf.String())
+		}
+	}
+}

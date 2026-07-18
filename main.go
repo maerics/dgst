@@ -42,6 +42,14 @@ func newDgstCmd() *cobra.Command {
 var dgstCmd = newDgstCmd()
 var printVersion bool
 
+// sriStandardAlgorithms are the hash-algo tokens the W3C Subresource
+// Integrity spec recognizes; https://www.w3.org/TR/SRI/#hash-functions.
+var sriStandardAlgorithms = map[string]bool{
+	"sha256": true,
+	"sha384": true,
+	"sha512": true,
+}
+
 func main() {
 	log.SetFlags(0)
 	options := &Options{}
@@ -145,6 +153,9 @@ func printHash(name string, hfn func(*Options) hash.Hash, o *Options) func(*cobr
 				log.Fatalf("FATAL: failed to write hash to stdout: %v", err)
 			}
 		case o.FormatSRI:
+			if !sriStandardAlgorithms[name] {
+				fmt.Fprintf(c.ErrOrStderr(), "WARNING: %q is not a standard SRI hash algorithm, expected one of sha256/sha384/sha512\n", name)
+			}
 			fmt.Fprintln(stdout, name+"-"+base64.StdEncoding.EncodeToString(hash))
 		case o.FormatHex:
 			fmt.Fprintln(stdout, hex.EncodeToString(hash))

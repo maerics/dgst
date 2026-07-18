@@ -35,6 +35,13 @@ At most one of `--base64` / `--binary` / `--sri` / `--hex` may be set;
 combining two is a fatal error (`getFormats`/`quoteFormats` in
 `main.go`).
 
+`--sri` accepts any hash algorithm, but the W3C SRI spec only
+recognizes `sha256`/`sha384`/`sha512` as valid hash-algo tokens
+(https://www.w3.org/TR/SRI/#hash-functions). Using `--sri` with any
+other algorithm (e.g. `md5`, `sha1`, `blake2-256`) prints a `WARNING:`
+line to stderr but still emits the SRI string on stdout
+(`sriStandardAlgorithms` in `main.go`).
+
 ## Version info
 
 `--version` prints `getVersionString()`, built from `version`, `commit`,

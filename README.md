@@ -77,4 +77,9 @@ $ echo -n key > /tmp/hmac.key
 $ echo -n 'The quick brown fox jumps over the lazy dog' \
     | dgst sha1 --hmac-key=/tmp/hmac.key
 de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9
+$ echo -n | dgst sha256 --sri
+sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
+$ echo -n | dgst md5 --sri
+WARNING: "md5" is not a standard SRI hash algorithm, expected one of sha256/sha384/sha512
+md5-1B2M2Y8AsgTpgAmY7PhCfg==
 ```
